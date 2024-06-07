@@ -1,5 +1,8 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 
 public class Main {
@@ -26,7 +29,26 @@ public class Main {
           throw new RuntimeException(e);
         }
       }
+
+      case "cat-file" -> {
+        String hash = args[2];
+        String dirHash = hash.substring(0,2);
+        String fileHash = hash.substring(2);
+        File blobFile = new File(".git/objects/"+dirHash+"/"+fileHash);
+
+        try{
+          String bf=new BufferedReader(new InputStreamReader(new FileInputStream(blobFile))).readLine();
+          String con = bf.substring(bf.indexOf("/0")+1);
+          System.out.println(con);
+        }catch(Exception e){
+          throw new RuntimeException(e);
+        }
+        
+      }
+
       default -> System.out.println("Unknown command: " + command);
     }
+
+
   }
 }
