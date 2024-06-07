@@ -40,7 +40,7 @@ public class Main {
         try{
           String bf=new BufferedReader(new InputStreamReader(new InflaterInputStream(new FileInputStream(blobFile)))).readLine();
           String con = bf.substring(bf.indexOf("\0")+1);
-          System.out.println(con);
+          System.out.print(con);
         }catch(Exception e){
           throw new RuntimeException(e);
         }
