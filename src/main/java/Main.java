@@ -33,19 +33,16 @@ public class Main {
 
       case "cat-file" -> {
         String hash = args[2];
-        String dirHash = hash.substring(0,2);
+        String dirHash = hash.substring(0, 2);
         String fileHash = hash.substring(2);
-        File blobFile = new File("./.git/objects/"+dirHash+"/"+fileHash);
-
-        try{
-          String bf=new BufferedReader(new InputStreamReader(new InflaterInputStream(new FileInputStream(blobFile)))).readLine();
-          String con = bf.substring(bf.indexOf("\0")+1);
-          con = con.replaceAll("\n", "");
-          System.out.print(con);
-        }catch(Exception e){
+        File blobFile = new File("./.git/objects/" + dirHash + "/" + fileHash);
+        try {
+          String blob = new BufferedReader (new InputStreamReader(new InflaterInputStream(new FileInputStream(blobFile)))).readLine();
+          String content = blob.substring(blob.indexOf("\0")+1);
+          System.out.print(content);
+        } catch (IOException e) {
           throw new RuntimeException(e);
         }
-        
       }
 
       default -> System.out.println("Unknown command: " + command);
