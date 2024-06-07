@@ -36,8 +36,8 @@ public class Main {
         String dirHash = hash.substring(0, 2);
         String fileHash = hash.substring(2);
         File blobFile = new File("./.git/objects/" + dirHash + "/" + fileHash);
-        try {
-          String blob = new BufferedReader (new InputStreamReader(new InflaterInputStream(new FileInputStream(blobFile)))).readLine();
+        try(BufferedReader blobRead = new BufferedReader (new InputStreamReader(new InflaterInputStream(new FileInputStream(blobFile))))) {
+          String blob = blobRead.readLine();
           String content = blob.substring(blob.indexOf("\0")+1);
           System.out.print(content);
         } catch (IOException e) {
