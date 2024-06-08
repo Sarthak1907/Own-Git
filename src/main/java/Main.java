@@ -91,7 +91,7 @@ public class Main {
         var hash=HexFormat.of().formatHex(digest);
 
         //The program will print out the 40-character SHA hash to output
-        System.err.print(hash);
+        System.out.print(hash);
 
         if (createBlob) {
           // add file to the blobs directory
