@@ -1,9 +1,15 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 public class Main {
@@ -43,6 +49,71 @@ public class Main {
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
+      }
+
+      case "hash-object" -> {// hash-object -w helloworld
+        String input=args[1];
+        String fileName;
+        boolean createBlob=false;
+
+        // check for argument
+        if(input.equals("-w")){
+          createBlob=true;
+          fileName=args[2];
+        }else{
+          fileName=input;
+        }
+
+        // Read File Contents in bytes
+        byte[] bytes;
+        try{
+          bytes=Files.readAllBytes(Paths.get(fileName));
+        }catch(IOException e){
+          throw new RuntimeException(e);
+        }
+
+        byte[] nullByte={0};
+        byte[] lengthBytes=String.valueOf(bytes.length).getBytes();
+        MessageDigest md;
+
+        try{
+          md=MessageDigest.getInstance("SHA-1");
+          md.update("blob ".getBytes());
+          md.update(lengthBytes);
+          md.update(nullByte);
+          md.update(bytes);
+        }catch(NoSuchAlgorithmException e){
+          throw new RuntimeException(e);
+        }
+
+        byte[] digest=md.digest();
+
+        var hash=HexFormat.of().formatHex(digest);
+
+        //The program will print out the 40-character SHA hash to output
+        System.err.print(hash);
+
+        if (createBlob) {
+          // add file to the blobs directory
+          try {
+            String directoryHash = hash.substring(0, 2);
+            String fileHash = hash.substring(2);
+            File blobFile = new File("./.git/objects/" + directoryHash + "/" + fileHash);
+            blobFile.getParentFile().mkdirs();
+            blobFile.createNewFile();
+            //zlib compress the file
+            FileOutputStream fos = new FileOutputStream(blobFile);
+            DeflaterOutputStream dos = new DeflaterOutputStream(fos);
+            dos.write("blob ".getBytes());
+            dos.write(lengthBytes);
+            dos.write(nullByte);
+            dos.write(bytes);
+            dos.close();
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        }
+
       }
 
       default -> System.out.println("Unknown command: " + command);
