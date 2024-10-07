@@ -1,17 +1,12 @@
-[![progress-banner](https://backend.codecrafters.io/progress/git/c0b69e1d-8a8f-44f5-9ea7-d0d554f40ff5)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
-
-This is a starting point for Java solutions to the
-["Build Your Own Git" Challenge](https://codecrafters.io/challenges/git).
+# Git
 
 In this challenge, you'll build a small Git implementation that's capable of
 initializing a repository, creating commits and cloning a public repository.
 Along the way we'll learn about the `.git` directory, Git objects (blobs,
 commits, trees etc.), Git's transfer protocols and more.
+## Project Details
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
-
-# Passing the first stage
+### Passing the first stage
 
 The entry point for your Git implementation is in `src/main/java/Main.java`.
 Study and uncomment the relevant code, and push your changes to pass the first
@@ -23,39 +18,85 @@ git commit -m "pass 1st stage" # any msg
 git push origin master
 ```
 
-That's all!
+### Stage 2  --  Initialize the .git directory
 
-# Stage 2 & beyond
+#### git init command
 
-Note: This section is for stages 2 and beyond.
+Check if .git directory exists.
 
-1. Ensure you have `java (21)` installed locally
-1. Run `./your_git.sh` to run your Git implementation, which is implemented in
-   `src/main/java/Main.java`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+Check if .git/objects directory exists.
 
-# Testing locally
+Check if .git/refs directory exists.
 
-The `your_git.sh` script is expected to operate on the `.git` folder inside the
-current working directory. If you're running this inside the root of this
-repository, you might end up accidentally damaging your repository's `.git`
-folder.
+Check if .git/HEAD file exists.
 
-We suggest executing `your_git.sh` in a different folder when testing locally.
-For example:
+Check if .git/HEAD contains either "ref: refs/heads/main\n" or "ref: refs/heads/master\n".
 
-```sh
-mkdir -p /tmp/testing && cd /tmp/testing
-/path/to/your/repo/your_git.sh init
-```
+### Stage 3  --  Read a blob object
 
-To make this easier to type out, you could add a
-[shell alias](https://shapeshed.com/unix-alias/):
+#### git cat-file command
 
-```sh
-alias mygit=/path/to/your/repo/your_git.sh
+The tester will verify that the output of our program matches the binary data that the blob contains.
 
-mkdir -p /tmp/testing && cd /tmp/testing
-mygit init
-```
+### Stage 4  --  Create a blob object
+
+#### git hash-object command
+
+The tester will verify that:
+
+Our program prints a 40-character SHA hash to stdout.
+
+The file written to .git/objects matches what the official git implementation would write.
+
+### Stage 5  --  Read a tree object
+
+#### git ls-tree command
+
+It'll verify that the output of your program matches the contents of the tree object.
+
+In a tree object file, the SHA hashes are not in hexadecimal format. They're just raw bytes (20 bytes long).
+
+In a tree object file, entries are sorted by their name. The output of ls-tree matches this order.
+
+### Stage 6  --  Write a tree object
+
+#### git write-tree command
+
+Expected to write the entire working directory as a tree object and print the 40-char SHA to stdout.
+
+The tester will verify that the output of your program matches the SHA hash of the tree object that the official git implementation would write.
+
+The implementation of git write-tree here differs slightly from the official git implementation. The official git implementation uses the staging area to determine what to write to the tree object. We'll just assume that all files in the working directory are staged.
+
+### Stage 7  --  Create a commit
+
+#### git commit-tree command
+
+Our program must create a commit object and print its 40-char SHA to stdout.
+
+To keep things simple:
+
+We'll receive exactly one parent commit.
+
+We'll receive exactly one line in the message.
+
+We're free to hardcode any valid name/email for the author/committer fields.
+
+To verify your changes, the tester will read the commit object from the .git directory. It'll use the git show command to do this.
+
+### Stage 8  --  Clone a repository
+
+Our program must create "some_dir" and clone the given repository into it.
+
+To verify your changes, the tester will:
+
+Check the contents of a random file
+Read commit object attributes from the .git directory
+## Author
+
+- [@Sarthak1907](https://github.com/Sarthak1907)
+
+
+## Reference
+
+Code Crafters -- (https://app.codecrafters.io/catalog)
