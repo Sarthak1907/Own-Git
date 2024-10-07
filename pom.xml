@@ -15,23 +15,6 @@
         <java.version>21</java.version>
     </properties>
 
-    <repositories>
-    <repository>
-      <id>jgit-repository</id>
-      <url>http://download.eclipse.org/jgit/maven</url>
-    </repository>
-  </repositories>
-
-  <!-- Core Library -->
-  <dependencies>
-    <dependency>
-      <groupId>org.eclipse.jgit</groupId>
-      <artifactId>org.eclipse.jgit</artifactId>
-      <version>1.0.0.201106090707-r</version>
-    </dependency>
-    
-  </dependencies>
-
     <build>
         <plugins>
             <plugin>
